@@ -85,7 +85,11 @@ Eo1_adm <- admtools::sedrate_to_multiadm(
   L_unit = "m"
 )
 plot(Eo1_adm)
-
+mean(unlist(get_time(Eo1_adm, 150.0)))
+mean(unlist(get_time(Eo1_adm, 160.0)))
+mean(unlist(get_time(Eo1_adm, 170.0)))
+mean(unlist(get_time(Eo1_adm, 180.0)))
+mean(unlist(get_time(Eo1_adm, 190.0)))
 
 #### Interval 2 ####
 
@@ -119,14 +123,15 @@ Eo2_adm <- admtools::sedrate_to_multiadm(
   h_tp = h_tp2,
   t_tp = t_tp2,
   sed_rate_gen = sed2,
-  h = 200.0,
+  h = c(195.0, 200.0),
   no_of_rep = 100L,
   subdivisions = 100L,
   stop.on.error = F,
   T_unit = "kyr",
   L_unit = "m"
 )
-
+plot(Eo2_adm)
+mean(unlist(get_time(Eo2_adm, 200.0)))
 
 #### Interval 3 ####
 
@@ -176,11 +181,194 @@ Eo3_adm <- admtools::sedrate_to_multiadm(
   T_unit = "kyr",
   L_unit = "m"
 )
-
-
+plot(Eo3_adm)
+mean(unlist(get_time(Eo3_adm, 210.0)))
+mean(unlist(get_time(Eo3_adm, 220.0)))
+mean(unlist(get_time(Eo3_adm, 230.0)))
+mean(unlist(get_time(Eo3_adm, 240.0)))
+mean(unlist(get_time(Eo3_adm, 250.0)))
+mean(unlist(get_time(Eo3_adm, 260.0)))
+mean(unlist(get_time(Eo3_adm, 270.0)))
+mean(unlist(get_time(Eo3_adm, 280.0)))
 #### Combined adm ####
 
 Eo_adm <- merge_multiadm(Eo1_adm, Eo2_adm, Eo3_adm)
+par(mfcol=c(1,1))
 plot(Eo_adm)
 
+range(get_time(Eo_adm, 280.0))
+get_time(Eo1_adm, 150.0)
+#### Question 1 - Eccentricity ####
 
+astrochron::timeOpt(dat = Eo1, 
+                    output = 1,
+                    sedmin=0.01,
+                    sedmax=3,
+                    targetE=c(405.98, 100.21),
+                    check = T,
+                    verbose = T,
+                    fit=2, # Test for eccentricity amplitude modulation
+                    flow=1/24, # Low frequency cut-off for Taner bandpass (half power point; in cycles/ka)
+                    roll=1000, # Taner filter roll-off rate, in dB/octave.
+                    genplot = T)
+
+
+Eo3_sim <- astrochron::timeOptSim(dat = Eo3,
+                                 sedmin = 0.05,
+                                 sedmax = 3,
+                                 numsim = 500, 
+                                 fit=2,
+                                 targetE=c(405.98, 100.21),
+                                 roll=NULL, 
+                                 output=2, 
+                                 genplot = T, 
+                                 verbose = T)
+
+# (Envelope r^2) x (Spectral Power r^2) = 0.01831616
+# (Envelope r^2) * (Spectral Power r^2) p-value = 0.02 
+
+astrochron::timeOpt(dat = Eo2, 
+                    output = 1,
+                    sedmin=0.01,
+                    sedmax=3,
+                    targetE=c(405.98, 100.21),
+                    check = T,
+                    verbose = T,
+                    fit=2, # Test for eccentricity amplitude modulation
+                    flow=1/24, # Low frequency cut-off for Taner bandpass (half power point; in cycles/ka)
+                    roll=1000, # Taner filter roll-off rate, in dB/octave.
+                    genplot = T)
+
+
+Eo2_sim <- astrochron::timeOptSim(dat = Eo2,
+                                  sedmin = 0.05,
+                                  sedmax = 3,
+                                  numsim = 500, 
+                                  fit=2,
+                                  targetE=c(405.98, 100.21),
+                                  roll=NULL, 
+                                  output=2, 
+                                  genplot = T, 
+                                  verbose = T)
+# (Envelope r^2) x (Spectral Power r^2) = 0.1123426
+# (Envelope r^2) * (Spectral Power r^2) p-value = 0.38
+
+astrochron::timeOpt(dat = Eo2, 
+                    output = 1,
+                    sedmin=0.01,
+                    sedmax=3,
+                    targetE=c(405.98, 100.21),
+                    check = T,
+                    verbose = T,
+                    fit=2, # Test for eccentricity amplitude modulation
+                    flow=1/24, # Low frequency cut-off for Taner bandpass (half power point; in cycles/ka)
+                    roll=1000, # Taner filter roll-off rate, in dB/octave.
+                    genplot = T)
+
+
+Eo1_sim <- astrochron::timeOptSim(dat = Eo1,
+                                  sedmin = 0.05,
+                                  sedmax = 3,
+                                  numsim = 500, 
+                                  fit=2,
+                                  targetE=c(405.98, 100.21),
+                                  roll=NULL, 
+                                  output=2, 
+                                  genplot = T, 
+                                  verbose = T)
+
+# (Envelope r^2) x (Spectral Power r^2) = 0133845
+# (Envelope r^2) * (Spectral Power r^2) p-value = 0.27
+
+
+#### Question 1 - Precession ####
+# Precession targets 64 ky plus 74 ky https://doi-org.proxy.library.uu.nl/10.1002/2017GC007367
+
+astrochron::timeOpt(dat = Eo1, 
+                    output = 1,
+                    sedmin=0.01,
+                    sedmax=3,
+                    targetP=c(64, 74),
+                    check = T,
+                    verbose = T,
+                    fit=1,
+                    flow=1/24, # Low frequency cut-off for Taner bandpass (half power point; in cycles/ka)
+                    roll=1000, # Taner filter roll-off rate, in dB/octave.
+                    genplot = T)
+
+
+Eo3_sim <- astrochron::timeOptSim(dat = Eo3,
+                                  sedmin = 0.05,
+                                  sedmax = 3,
+                                  numsim = 1000, 
+                                  fit=1,
+                                  targetP=c(64, 74),
+                                  roll=NULL, 
+                                  output=2, 
+                                  genplot = T, 
+                                  verbose = T)
+
+# (Envelope r^2) x (Spectral Power r^2) = 0.01216367
+
+# * (Envelope r^2) * (Spectral Power r^2) p-value = 0.737
+
+astrochron::timeOpt(dat = Eo2, 
+                    output = 1,
+                    sedmin=0.01,
+                    sedmax=3,
+                    targetE=c(405.98, 100.21),
+                    check = T,
+                    verbose = T,
+                    fit=2, # Test for eccentricity amplitude modulation
+                    flow=1/24, # Low frequency cut-off for Taner bandpass (half power point; in cycles/ka)
+                    roll=1000, # Taner filter roll-off rate, in dB/octave.
+                    genplot = T)
+
+
+Eo2_sim <- astrochron::timeOptSim(dat = Eo2,
+                                  sedmin = 0.05,
+                                  sedmax = 3,
+                                  numsim = 500, 
+                                  fit=1,
+                                  targetP=c(64, 74),
+                                  roll=NULL, 
+                                  output=2, 
+                                  genplot = T, 
+                                  verbose = T)
+
+# (Envelope r^2) x (Spectral Power r^2) = 0.213937 
+
+# (Envelope r^2) * (Spectral Power r^2) p-value = 0.562 
+
+astrochron::timeOpt(dat = Eo2, 
+                    output = 1,
+                    sedmin=0.01,
+                    sedmax=3,
+                    targetE=c(405.98, 100.21),
+                    check = T,
+                    verbose = T,
+                    fit=2, # Test for eccentricity amplitude modulation
+                    flow=1/24, # Low frequency cut-off for Taner bandpass (half power point; in cycles/ka)
+                    roll=1000, # Taner filter roll-off rate, in dB/octave.
+                    genplot = T)
+
+
+Eo1_sim <- astrochron::timeOptSim(dat = Eo1,
+                                  sedmin = 0.05,
+                                  sedmax = 3,
+                                  numsim = 500, 
+                                  fit=1,
+                                  targetE=c(405.98, 100.21),
+                                  roll=NULL, 
+                                  output=2, 
+                                  genplot = T, 
+                                  verbose = T)
+# (Envelope r^2) x (Spectral Power r^2) = 0.01052402
+# (Envelope r^2) * (Spectral Power r^2) p-value = 0.162
+
+#### Question 3 ####
+# What is your uncertainty on the duration estimate of magnetochron C23r in U1514?
+mean(unlist(get_time(Eo3_adm, 250.61))) - mean(unlist(get_time(Eo3_adm, 245.87)))
+
+range(unlist(get_time(Eo3_adm, 250.61)))
+range(unlist(get_time(Eo3_adm, 245.87)))
