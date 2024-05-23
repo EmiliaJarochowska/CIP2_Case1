@@ -1,6 +1,9 @@
 require(astrochron)
-require(admtools)
-
+remotes::install_github(repo = "MindTheGap-ERC/admtools", 
+                        ref = "dev", 
+                        force = TRUE,
+                        build_vignettes = T)
+library(admtools)
 case1 <- read.csv2(file = "Case1/IODP_Site_U1514_splice_AlTi.csv",
                    sep = ",")
 case1$Al.Ti <- as.numeric(case1$Al.Ti)
@@ -26,11 +29,11 @@ Eo_int <- astrochron::linterp(dat = Eocene,
 
 ##### Piecewise analysis #####
 
-par(mfcol=c(1,2))
+par(mfcol=c(1,1))
 plot(Eo_int$Al.Ti,Eo_int$Depth.CCSF.A..mcd., type="l")
 abline(h=192.5084, col = "red")
 abline(h=206.3406, col = "blue")
-plot(Eo_model$y, Eo_model$x, type="l")
+
 
 
 #Split into intervals visually
@@ -42,8 +45,8 @@ Eo3 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.> 206.3406,]
 #### Interval 1 ####
 
 Eo_eto1 <- eTimeOpt(dat = Eo1,
-                    win=dt*100,
-                    step = dt*10,
+                    win=dt*50,
+                    step = dt*5,
                     sedmin = 0.01,
                     sedmax = 5,
                     fit = 2,
@@ -55,25 +58,129 @@ Eo_eto1 <- eTimeOpt(dat = Eo1,
                     verbose = 2)
 
 sedrate_adm1 <- get_data_from_eTimeOpt(Eo_eto1, index = 1)
+range(sedrate_adm1$heights)
 
-t_tp1 = tp_height_det(heights = 43.32)
+t_tp1 = tp_height_det(heights = c(42640, 43320))
 h_tp1 = function() {
-  h = runif(n = 1, min = 183.04, max = 187.82)
+  h = c(
+    runif(n = 1, min = 160.1, max = 169.97),
+    runif(n = 1, min = 183.04, max = 187.82))
   return(h)
 }
-sed1 <- sed_rate_from_matrix(height = sedrate_adm1$heights, 
+sed1 <- admtools::sed_rate_from_matrix(height = sedrate_adm1$heights, 
                              sedrate = sedrate_adm1$sed_rate, 
                              matrix = sedrate_adm1$results, 
                              rate = 1)
 
-Eo1_adm <- sedrate_to_multiadm(
+Eo1_adm <- admtools::sedrate_to_multiadm(
   h_tp = h_tp1,
   t_tp = t_tp1,
   sed_rate_gen = sed1,
-  h = 100,
+  h = c(150.0, 160.0, 170.0,
+        180.0, 190.0),
   no_of_rep = 100L,
   subdivisions = 100L,
   stop.on.error = F,
   T_unit = "kyr",
   L_unit = "m"
 )
+plot(Eo1_adm)
+
+
+#### Interval 2 ####
+
+Eo_eto2 <- eTimeOpt(dat = Eo2,
+                    win=dt*40,
+                    step = dt*10,
+                    sedmin = 0.01,
+                    sedmax = 5,
+                    fit = 2,
+                    fitModPwr = T,
+                    detrend = T,
+                    output = 1,
+                    genplot = T,
+                    check = T,
+                    verbose = 2)
+
+sedrate_adm2 <- get_data_from_eTimeOpt(Eo_eto2, index = 1)
+range(sedrate_adm2$heights)
+
+t_tp2 = tp_height_det(heights = 44120)
+h_tp2 = function() {
+  h = runif(n = 1, min = 193.63, max = 197.42)
+  return(h)
+}
+sed2 <- admtools::sed_rate_from_matrix(height = sedrate_adm2$heights, 
+                                       sedrate = sedrate_adm2$sed_rate, 
+                                       matrix = sedrate_adm2$results, 
+                                       rate = 1)
+
+Eo2_adm <- admtools::sedrate_to_multiadm(
+  h_tp = h_tp2,
+  t_tp = t_tp2,
+  sed_rate_gen = sed2,
+  h = 200.0,
+  no_of_rep = 100L,
+  subdivisions = 100L,
+  stop.on.error = F,
+  T_unit = "kyr",
+  L_unit = "m"
+)
+
+
+#### Interval 3 ####
+
+Eo_eto3 <- eTimeOpt(dat = Eo3,
+                    win=dt*40,
+                    step = dt*10,
+                    sedmin = 0.01,
+                    sedmax = 5,
+                    fit = 2,
+                    fitModPwr = T,
+                    detrend = T,
+                    output = 1,
+                    genplot = T,
+                    check = T,
+                    verbose = 2)
+
+sedrate_adm3 <- get_data_from_eTimeOpt(Eo_eto3, index = 1)
+range(sedrate_adm3$heights)
+
+t_tp3 = function() {
+  t = c(45490, 
+        46210,
+        runif(n = 1, min = 47840, max = 50500))
+  return(t)
+}
+
+h_tp3 = function() {
+  h = c(
+    runif(n = 1, min = 207.59, max = 217.3),
+    runif(n = 1, min = 217.3, max = 227.66),
+    runif(n = 1, min = 227.66, max = 236.96))
+  return(h)
+}
+sed3 <- admtools::sed_rate_from_matrix(height = sedrate_adm3$heights, 
+                                       sedrate = sedrate_adm3$sed_rate, 
+                                       matrix = sedrate_adm3$results, 
+                                       rate = 1)
+
+Eo3_adm <- admtools::sedrate_to_multiadm(
+  h_tp = h_tp3,
+  t_tp = t_tp3,
+  sed_rate_gen = sed3,
+  h = c(210.0, 220.0, 230.0, 240.0, 250.0, 260.0, 270.0, 280.0),
+  no_of_rep = 100L,
+  subdivisions = 100L,
+  stop.on.error = F,
+  T_unit = "kyr",
+  L_unit = "m"
+)
+
+
+#### Combined adm ####
+
+Eo_adm <- merge_multiadm(Eo1_adm, Eo2_adm, Eo3_adm)
+plot(Eo_adm)
+
+
