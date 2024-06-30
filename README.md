@@ -32,4 +32,9 @@ In the RStudion IDE, open the file `CIP2_ej`. This will start the R project and 
   
 - Vahlenkamp, M., De Vleeschouwer, D., Batenburg, S.J., Edgar, K.M., Hanson, E., Martinez, M., Pälike, H., MacLeod, K.G., Li, Y.X., Richter, C. and Bogus, K., 2020. A lower to middle Eocene astrochronology for the Mentelle Basin (Australia) and its implications for the geologic time scale. Earth and Planetary Science Letters, 529, p.115865.
 
+## Authors
+
+The problem and data were provided by the [organizers of CIP 2.0](https://www.cyclostratigraphy.org/the-cip-initiative).
+
+Code by E. Jarochowska (e.b.jarochowska [at] uu.nl) with contributions by N. Hohmann (n.h.hohmann [at] uu.nl).
 
