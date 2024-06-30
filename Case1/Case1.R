@@ -10,8 +10,12 @@ case1$Al.Ti <- as.numeric(case1$Al.Ti)
 case1$Depth.CCSF.A..mcd. <- as.numeric(case1$Depth.CCSF.A..mcd.)
 
 #### Eocene ####
+h_min = 285
+h_max = 140
+h_1 = 192.5084
+h_2 = 206.3406
 
-Eocene <- case1[case1$Depth.CCSF.A..mcd. <= 285 & case1$Depth.CCSF.A..mcd. >= 140,]
+Eocene <- case1[case1$Depth.CCSF.A..mcd. <= h_min & case1$Depth.CCSF.A..mcd. >= h_max,]
 
 duration = 50.5 - 41 # Ma
 
@@ -31,16 +35,16 @@ Eo_int <- astrochron::linterp(dat = Eocene,
 
 par(mfcol=c(1,1))
 plot(Eo_int$Al.Ti,Eo_int$Depth.CCSF.A..mcd., type="l")
-abline(h=192.5084, col = "red")
-abline(h=206.3406, col = "blue")
+abline(h=h_1, col = "red")
+abline(h=h_2, col = "blue")
 
 
 
 #Split into intervals visually
 
-Eo1 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.< 192.5084,]
-Eo2 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.>= 192.5084 & Eo_int$Depth.CCSF.A..mcd. <= 206.3406,]
-Eo3 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.> 206.3406,]
+Eo1 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.< h_1,]
+Eo2 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.>= h_1 & Eo_int$Depth.CCSF.A..mcd. <= h_2,]
+Eo3 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.> h_2,]
 
 #### Interval 1 ####
 
@@ -60,7 +64,7 @@ Eo_eto1 <- eTimeOpt(dat = Eo1,
 sedrate_adm1 <- get_data_from_eTimeOpt(Eo_eto1, index = 1)
 range(sedrate_adm1$heights)
 
-t_tp1 = tp_height_det(heights = c(42640, 43320))
+t_tp1 = tp_height_det(heights = c(42640, 43320)) # tie points in time
 h_tp1 = function() {
   h = c(
     runif(n = 1, min = 160.1, max = 169.97),
@@ -76,8 +80,7 @@ Eo1_adm <- admtools::sedrate_to_multiadm(
   h_tp = h_tp1,
   t_tp = t_tp1,
   sed_rate_gen = sed1,
-  h = c(150.0, 160.0, 170.0,
-        180.0, 190.0),
+  h = seq(from = h_max + 2, to =  h_1 - 2, by = 1),
   no_of_rep = 100L,
   subdivisions = 100L,
   stop.on.error = F,
@@ -123,7 +126,7 @@ Eo2_adm <- admtools::sedrate_to_multiadm(
   h_tp = h_tp2,
   t_tp = t_tp2,
   sed_rate_gen = sed2,
-  h = c(195.0, 200.0),
+  h = seq( from = h_1 + 2, to = h_2 -2, by = 1),
   no_of_rep = 100L,
   subdivisions = 100L,
   stop.on.error = F,
@@ -174,7 +177,7 @@ Eo3_adm <- admtools::sedrate_to_multiadm(
   h_tp = h_tp3,
   t_tp = t_tp3,
   sed_rate_gen = sed3,
-  h = c(210.0, 220.0, 230.0, 240.0, 250.0, 260.0, 270.0, 280.0),
+  h =  seq(from = h_2 + 2, to = h_min - 2, by = 1),
   no_of_rep = 100L,
   subdivisions = 100L,
   stop.on.error = F,
