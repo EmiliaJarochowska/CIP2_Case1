@@ -1,9 +1,14 @@
+# R code for Cyclostratigraphy Intercomparison Project 2.0 - Case 1
+# E. Jarochowska e.b.jarochowska@uu.nl
+
+install.packages(setdiff(c("remotes", "astrochron"), rownames(installed.packages())))
+
 require(astrochron)
-remotes::install_github(repo = "MindTheGap-ERC/admtools", 
-                        ref = "dev", 
+remotes::install_github(repo = "MindTheGap-ERC/admtools",
+                        ref = "dev",
                         force = TRUE,
                         build_vignettes = T)
-library(admtools)
+
 case1 <- read.csv2(file = "Case1/IODP_Site_U1514_splice_AlTi.csv",
                    sep = ",")
 case1$Al.Ti <- as.numeric(case1$Al.Ti)
@@ -21,7 +26,7 @@ duration = 50.5 - 41 # Ma
 
 av_sed = (max(Eocene$Depth.CCSF.A..mcd.)-min(Eocene$Depth.CCSF.A..mcd.))/duration/10 #cm/ky
 prec_period = 21*av_sed #cm
-N_per_cycle = 6 #Martinez et al. 
+N_per_cycle = 6 #Martinez et al.
 dh = prec_period/N_per_cycle
 dt = dh/100
 
@@ -71,9 +76,9 @@ h_tp1 = function() {
     runif(n = 1, min = 183.04, max = 187.82))
   return(h)
 }
-sed1 <- admtools::sed_rate_from_matrix(height = sedrate_adm1$heights, 
-                             sedrate = sedrate_adm1$sed_rate, 
-                             matrix = sedrate_adm1$results, 
+sed1 <- admtools::sed_rate_from_matrix(height = sedrate_adm1$heights,
+                             sedrate = sedrate_adm1$sed_rate,
+                             matrix = sedrate_adm1$results,
                              rate = 1)
 
 Eo1_adm <- admtools::sedrate_to_multiadm(
@@ -117,9 +122,9 @@ h_tp2 = function() {
   h = runif(n = 1, min = 193.63, max = 197.42)
   return(h)
 }
-sed2 <- admtools::sed_rate_from_matrix(height = sedrate_adm2$heights, 
-                                       sedrate = sedrate_adm2$sed_rate, 
-                                       matrix = sedrate_adm2$results, 
+sed2 <- admtools::sed_rate_from_matrix(height = sedrate_adm2$heights,
+                                       sedrate = sedrate_adm2$sed_rate,
+                                       matrix = sedrate_adm2$results,
                                        rate = 1)
 
 Eo2_adm <- admtools::sedrate_to_multiadm(
@@ -155,7 +160,7 @@ sedrate_adm3 <- get_data_from_eTimeOpt(Eo_eto3, index = 1)
 range(sedrate_adm3$heights)
 
 t_tp3 = function() {
-  t = c(45490, 
+  t = c(45490,
         46210,
         runif(n = 1, min = 47840, max = 50500))
   return(t)
@@ -168,9 +173,9 @@ h_tp3 = function() {
     runif(n = 1, min = 227.66, max = 236.96))
   return(h)
 }
-sed3 <- admtools::sed_rate_from_matrix(height = sedrate_adm3$heights, 
-                                       sedrate = sedrate_adm3$sed_rate, 
-                                       matrix = sedrate_adm3$results, 
+sed3 <- admtools::sed_rate_from_matrix(height = sedrate_adm3$heights,
+                                       sedrate = sedrate_adm3$sed_rate,
+                                       matrix = sedrate_adm3$results,
                                        rate = 1)
 
 Eo3_adm <- admtools::sedrate_to_multiadm(
@@ -193,6 +198,7 @@ mean(unlist(get_time(Eo3_adm, 250.0)))
 mean(unlist(get_time(Eo3_adm, 260.0)))
 mean(unlist(get_time(Eo3_adm, 270.0)))
 mean(unlist(get_time(Eo3_adm, 280.0)))
+
 #### Combined adm ####
 
 Eo_adm <- merge_multiadm(Eo1_adm, Eo2_adm, Eo3_adm)
@@ -201,9 +207,10 @@ plot(Eo_adm)
 
 range(get_time(Eo_adm, 280.0))
 get_time(Eo1_adm, 150.0)
+
 #### Question 1 - Eccentricity ####
 
-astrochron::timeOpt(dat = Eo1, 
+astrochron::timeOpt(dat = Eo1,
                     output = 1,
                     sedmin=0.01,
                     sedmax=3,
@@ -219,18 +226,18 @@ astrochron::timeOpt(dat = Eo1,
 Eo3_sim <- astrochron::timeOptSim(dat = Eo3,
                                  sedmin = 0.05,
                                  sedmax = 3,
-                                 numsim = 500, 
+                                 numsim = 500,
                                  fit=2,
                                  targetE=c(405.98, 100.21),
-                                 roll=NULL, 
-                                 output=2, 
-                                 genplot = T, 
+                                 roll=NULL,
+                                 output=2,
+                                 genplot = T,
                                  verbose = T)
 
 # (Envelope r^2) x (Spectral Power r^2) = 0.01831616
-# (Envelope r^2) * (Spectral Power r^2) p-value = 0.02 
+# (Envelope r^2) * (Spectral Power r^2) p-value = 0.02
 
-astrochron::timeOpt(dat = Eo2, 
+astrochron::timeOpt(dat = Eo2,
                     output = 1,
                     sedmin=0.01,
                     sedmax=3,
@@ -246,17 +253,18 @@ astrochron::timeOpt(dat = Eo2,
 Eo2_sim <- astrochron::timeOptSim(dat = Eo2,
                                   sedmin = 0.05,
                                   sedmax = 3,
-                                  numsim = 500, 
+                                  numsim = 500,
                                   fit=2,
                                   targetE=c(405.98, 100.21),
-                                  roll=NULL, 
-                                  output=2, 
-                                  genplot = T, 
+                                  roll=NULL,
+                                  output=2,
+                                  genplot = T,
                                   verbose = T)
+
 # (Envelope r^2) x (Spectral Power r^2) = 0.1123426
 # (Envelope r^2) * (Spectral Power r^2) p-value = 0.38
 
-astrochron::timeOpt(dat = Eo2, 
+astrochron::timeOpt(dat = Eo2,
                     output = 1,
                     sedmin=0.01,
                     sedmax=3,
@@ -272,12 +280,12 @@ astrochron::timeOpt(dat = Eo2,
 Eo1_sim <- astrochron::timeOptSim(dat = Eo1,
                                   sedmin = 0.05,
                                   sedmax = 3,
-                                  numsim = 500, 
+                                  numsim = 500,
                                   fit=2,
                                   targetE=c(405.98, 100.21),
-                                  roll=NULL, 
-                                  output=2, 
-                                  genplot = T, 
+                                  roll=NULL,
+                                  output=2,
+                                  genplot = T,
                                   verbose = T)
 
 # (Envelope r^2) x (Spectral Power r^2) = 0133845
@@ -287,7 +295,7 @@ Eo1_sim <- astrochron::timeOptSim(dat = Eo1,
 #### Question 1 - Precession ####
 # Precession targets 64 ky plus 74 ky https://doi-org.proxy.library.uu.nl/10.1002/2017GC007367
 
-astrochron::timeOpt(dat = Eo1, 
+astrochron::timeOpt(dat = Eo1,
                     output = 1,
                     sedmin=0.01,
                     sedmax=3,
@@ -303,19 +311,19 @@ astrochron::timeOpt(dat = Eo1,
 Eo3_sim <- astrochron::timeOptSim(dat = Eo3,
                                   sedmin = 0.05,
                                   sedmax = 3,
-                                  numsim = 1000, 
+                                  numsim = 1000,
                                   fit=1,
                                   targetP=c(64, 74),
-                                  roll=NULL, 
-                                  output=2, 
-                                  genplot = T, 
+                                  roll=NULL,
+                                  output=2,
+                                  genplot = T,
                                   verbose = T)
 
 # (Envelope r^2) x (Spectral Power r^2) = 0.01216367
 
 # * (Envelope r^2) * (Spectral Power r^2) p-value = 0.737
 
-astrochron::timeOpt(dat = Eo2, 
+astrochron::timeOpt(dat = Eo2,
                     output = 1,
                     sedmin=0.01,
                     sedmax=3,
@@ -331,19 +339,19 @@ astrochron::timeOpt(dat = Eo2,
 Eo2_sim <- astrochron::timeOptSim(dat = Eo2,
                                   sedmin = 0.05,
                                   sedmax = 3,
-                                  numsim = 500, 
+                                  numsim = 500,
                                   fit=1,
                                   targetP=c(64, 74),
-                                  roll=NULL, 
-                                  output=2, 
-                                  genplot = T, 
+                                  roll=NULL,
+                                  output=2,
+                                  genplot = T,
                                   verbose = T)
 
-# (Envelope r^2) x (Spectral Power r^2) = 0.213937 
+# (Envelope r^2) x (Spectral Power r^2) = 0.213937
 
-# (Envelope r^2) * (Spectral Power r^2) p-value = 0.562 
+# (Envelope r^2) * (Spectral Power r^2) p-value = 0.562
 
-astrochron::timeOpt(dat = Eo2, 
+astrochron::timeOpt(dat = Eo2,
                     output = 1,
                     sedmin=0.01,
                     sedmax=3,
@@ -359,18 +367,20 @@ astrochron::timeOpt(dat = Eo2,
 Eo1_sim <- astrochron::timeOptSim(dat = Eo1,
                                   sedmin = 0.05,
                                   sedmax = 3,
-                                  numsim = 500, 
+                                  numsim = 500,
                                   fit=1,
                                   targetE=c(405.98, 100.21),
-                                  roll=NULL, 
-                                  output=2, 
-                                  genplot = T, 
+                                  roll=NULL,
+                                  output=2,
+                                  genplot = T,
                                   verbose = T)
+
 # (Envelope r^2) x (Spectral Power r^2) = 0.01052402
 # (Envelope r^2) * (Spectral Power r^2) p-value = 0.162
 
 #### Question 3 ####
 # What is your uncertainty on the duration estimate of magnetochron C23r in U1514?
+
 mean(unlist(get_time(Eo3_adm, 250.61))) - mean(unlist(get_time(Eo3_adm, 245.87)))
 
 range(unlist(get_time(Eo3_adm, 250.61)))
