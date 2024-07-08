@@ -6,7 +6,7 @@ Code for analysing [Case 1](https://www.cyclostratigraphy.org/fileadmin/user_upl
 
 `Case1` contains: 
 - `Case1.R` script 
-- file `IODP_Site_U1514_splice_AlTi.csv` from [CIP2.0 website](https://www.cyclostratigraphy.org/fileadmin/user_upload/Microsite_Cyclostratigraphy/CIP_cases/CIPII/CIP2.0_Case_1.zip) 
+- file `IODP_Site_U1514_splice_AlTi.csv` from [CIP2.0 website](https://www.cyclostratigraphy.org/fileadmin/user_upload/Microsite_Cyclostratigraphy/CIP_cases/CIPII/CIP2.0_Case_1.zip) distributed under the (CC BY 4.0 license)[https://creativecommons.org/%E2%80%8Blicenses/by/4.0/].
 
 ## Requirements
 
