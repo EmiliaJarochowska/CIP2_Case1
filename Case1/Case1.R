@@ -15,8 +15,12 @@ case1$Al.Ti <- as.numeric(case1$Al.Ti)
 case1$Depth.CCSF.A..mcd. <- as.numeric(case1$Depth.CCSF.A..mcd.)
 
 #### Eocene ####
+
+# Dates selected based on Vahlenkamp et al. (2020)
 h_min = 285
 h_max = 140
+
+# Intervals selected visually as possible hiatuses
 h_1 = 192.5084
 h_2 = 206.3406
 
@@ -30,6 +34,7 @@ N_per_cycle = 6 #Martinez et al.
 dh = prec_period/N_per_cycle
 dt = dh/100
 
+# Linear interpolation
 Eo_int <- astrochron::linterp(dat = Eocene,
                               dt = dh/100,
                               genplot = T,
@@ -38,14 +43,14 @@ Eo_int <- astrochron::linterp(dat = Eocene,
 
 ##### Piecewise analysis #####
 
+# Illustrate the possible hiatuses
 par(mfcol=c(1,1))
 plot(Eo_int$Al.Ti,Eo_int$Depth.CCSF.A..mcd., type="l")
 abline(h=h_1, col = "red")
 abline(h=h_2, col = "blue")
 
 
-
-#Split into intervals visually
+# Split into intervals visually
 
 Eo1 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.< h_1,]
 Eo2 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.>= h_1 & Eo_int$Depth.CCSF.A..mcd. <= h_2,]
@@ -53,7 +58,7 @@ Eo3 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.> h_2,]
 
 #### Interval 1 ####
 
-Eo_eto1 <- eTimeOpt(dat = Eo1,
+Eo_eto1 <- astrochron::eTimeOpt(dat = Eo1,
                     win=dt*50,
                     step = dt*5,
                     sedmin = 0.01,
@@ -66,16 +71,21 @@ Eo_eto1 <- eTimeOpt(dat = Eo1,
                     check = T,
                     verbose = 2)
 
-sedrate_adm1 <- get_data_from_eTimeOpt(Eo_eto1, index = 1)
+# Extract accumulation rate from eTimeOpt solutions
+
+sedrate_adm1 <- admtools::get_data_from_eTimeOpt(Eo_eto1, index = 1)
 range(sedrate_adm1$heights)
 
-t_tp1 = tp_height_det(heights = c(42640, 43320)) # tie points in time
+##### Create an ADM based on fixed biostratigraphic datums #####
+
+t_tp1 = admtools::tp_height_det(heights = c(42640, 43320)) # tie points in time
 h_tp1 = function() {
   h = c(
     runif(n = 1, min = 160.1, max = 169.97),
     runif(n = 1, min = 183.04, max = 187.82))
   return(h)
 }
+
 sed1 <- admtools::sed_rate_from_matrix(height = sedrate_adm1$heights,
                              sedrate = sedrate_adm1$sed_rate,
                              matrix = sedrate_adm1$results,
@@ -92,12 +102,17 @@ Eo1_adm <- admtools::sedrate_to_multiadm(
   T_unit = "kyr",
   L_unit = "m"
 )
+
+par(mfcol=c(1,1))
 plot(Eo1_adm)
-mean(unlist(get_time(Eo1_adm, 150.0)))
-mean(unlist(get_time(Eo1_adm, 160.0)))
-mean(unlist(get_time(Eo1_adm, 170.0)))
-mean(unlist(get_time(Eo1_adm, 180.0)))
-mean(unlist(get_time(Eo1_adm, 190.0)))
+
+# Get requested ages
+
+mean(unlist(admtools::get_time(Eo1_adm, 150.0)))
+mean(unlist(admtools::get_time(Eo1_adm, 160.0)))
+mean(unlist(admtools::get_time(Eo1_adm, 170.0)))
+mean(unlist(admtools::get_time(Eo1_adm, 180.0)))
+mean(unlist(admtools::get_time(Eo1_adm, 190.0)))
 
 #### Interval 2 ####
 
@@ -117,7 +132,9 @@ Eo_eto2 <- eTimeOpt(dat = Eo2,
 sedrate_adm2 <- get_data_from_eTimeOpt(Eo_eto2, index = 1)
 range(sedrate_adm2$heights)
 
-t_tp2 = tp_height_det(heights = 44120)
+##### Create an ADM based on fixed biostratigraphic datums #####
+
+t_tp2 = admtools::tp_height_det(heights = 44120)
 h_tp2 = function() {
   h = runif(n = 1, min = 193.63, max = 197.42)
   return(h)
@@ -138,8 +155,12 @@ Eo2_adm <- admtools::sedrate_to_multiadm(
   T_unit = "kyr",
   L_unit = "m"
 )
+
+par(mfcol=c(1,1))
 plot(Eo2_adm)
-mean(unlist(get_time(Eo2_adm, 200.0)))
+
+# Get requested ages
+mean(unlist(admtools::get_time(Eo2_adm, 200.0)))
 
 #### Interval 3 ####
 
@@ -156,8 +177,10 @@ Eo_eto3 <- eTimeOpt(dat = Eo3,
                     check = T,
                     verbose = 2)
 
-sedrate_adm3 <- get_data_from_eTimeOpt(Eo_eto3, index = 1)
+sedrate_adm3 <- admtools::get_data_from_eTimeOpt(Eo_eto3, index = 1)
 range(sedrate_adm3$heights)
+
+##### Create an ADM based on fixed biostratigraphic datums #####
 
 t_tp3 = function() {
   t = c(45490,
@@ -189,23 +212,25 @@ Eo3_adm <- admtools::sedrate_to_multiadm(
   T_unit = "kyr",
   L_unit = "m"
 )
+
+par(mfcol=c(1,1))
 plot(Eo3_adm)
-mean(unlist(get_time(Eo3_adm, 210.0)))
-mean(unlist(get_time(Eo3_adm, 220.0)))
-mean(unlist(get_time(Eo3_adm, 230.0)))
-mean(unlist(get_time(Eo3_adm, 240.0)))
-mean(unlist(get_time(Eo3_adm, 250.0)))
-mean(unlist(get_time(Eo3_adm, 260.0)))
-mean(unlist(get_time(Eo3_adm, 270.0)))
-mean(unlist(get_time(Eo3_adm, 280.0)))
+mean(unlist(admtools::get_time(Eo3_adm, 210.0)))
+mean(unlist(admtools::get_time(Eo3_adm, 220.0)))
+mean(unlist(admtools::get_time(Eo3_adm, 230.0)))
+mean(unlist(admtools::get_time(Eo3_adm, 240.0)))
+mean(unlist(admtools::get_time(Eo3_adm, 250.0)))
+mean(unlist(admtools::get_time(Eo3_adm, 260.0)))
+mean(unlist(admtools::get_time(Eo3_adm, 270.0)))
+mean(unlist(admtools::get_time(Eo3_adm, 280.0)))
 
 #### Combined adm ####
 
-Eo_adm <- merge_multiadm(Eo1_adm, Eo2_adm, Eo3_adm)
+Eo_adm <- admtools::merge_multiadm(Eo1_adm, Eo2_adm, Eo3_adm)
 par(mfcol=c(1,1))
 plot(Eo_adm)
 
-range(get_time(Eo_adm, 280.0))
+range(admtools::get_time(Eo_adm, 280.0))
 get_time(Eo1_adm, 150.0)
 
 #### Question 1 - Eccentricity ####
@@ -381,7 +406,7 @@ Eo1_sim <- astrochron::timeOptSim(dat = Eo1,
 #### Question 3 ####
 # What is your uncertainty on the duration estimate of magnetochron C23r in U1514?
 
-mean(unlist(get_time(Eo3_adm, 250.61))) - mean(unlist(get_time(Eo3_adm, 245.87)))
+mean(unlist(admtools::get_time(Eo3_adm, 250.61))) - mean(unlist(admtools::get_time(Eo3_adm, 245.87)))
 
-range(unlist(get_time(Eo3_adm, 250.61)))
-range(unlist(get_time(Eo3_adm, 245.87)))
+range(unlist(admtools::get_time(Eo3_adm, 250.61)))
+range(unlist(admtools::get_time(Eo3_adm, 245.87)))
