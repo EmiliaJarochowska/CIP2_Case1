@@ -8,6 +8,7 @@ remotes::install_github(repo = "MindTheGap-ERC/admtools",
                         ref = "dev",
                         force = TRUE,
                         build_vignettes = T)
+require(admtools)
 
 case1 <- read.csv2(file = "Case1/IODP_Site_U1514_splice_AlTi.csv",
                    sep = ",")
@@ -40,21 +41,22 @@ Eo_int <- astrochron::linterp(dat = Eocene,
                               genplot = T,
                               check = T,
                               verbose = T)
+Eo_int$Depth.CCSF.A..mcd. <- -1*Eo_int$Depth.CCSF.A..mcd.
 
 ##### Piecewise analysis #####
 
 # Illustrate the possible hiatuses
 par(mfcol=c(1,1))
 plot(Eo_int$Al.Ti,Eo_int$Depth.CCSF.A..mcd., type="l")
-abline(h=h_1, col = "red")
-abline(h=h_2, col = "blue")
+abline(h=-h_1, col = "red")
+abline(h=-h_2, col = "blue")
 
 
 # Split into intervals visually
 
-Eo1 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.< h_1,]
-Eo2 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.>= h_1 & Eo_int$Depth.CCSF.A..mcd. <= h_2,]
-Eo3 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.> h_2,]
+Eo1 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.< -h_1,]
+Eo2 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.>= -h_1 & Eo_int$Depth.CCSF.A..mcd. <= -h_2,]
+Eo3 <- Eo_int[Eo_int$Depth.CCSF.A..mcd.> -h_2,]
 
 #### Interval 1 ####
 
